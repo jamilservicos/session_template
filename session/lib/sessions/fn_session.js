@@ -17,23 +17,23 @@ class Session {
         const that = this;
         if ((that._id) && (key) && (value)) {
             if (key === 'timestamp') {
-                that._db[key] = value;
-                that.store.sync(that._db);
+                this._db[key] = value;
+                that.store.sync(this._db);
                 return true;
             } else {
                 if (typeof value === "string") {
                     if (typeof key === "string") {
-                        if (dot.str(key, value, that._db, _s.clean)) that.store.sync(that._db); // verify the key, add the value and synchronize the memory and database
+                        if (dot.str(key, value, this._db, _s.clean)) that.store.sync(this._db); // verify the key, add the value and synchronize the memory and database
                         return true;
                     } else {
-                        that._db[key] = _s.clean(value);
-                        that.store.sync(that._db);
+                        this._db[key] = _s.clean(value);
+                        that.store.sync(this._db);
                         return true;
                     }
                 } else {
-                    that._db[key] = value;
-                    if (typeof key === "string") dot.object(that._db, undefined); // check if you have saved any keys in the "key-> key" format
-                    that.store.sync(that._db); // synchronize the memory and database
+                    this._db[key] = value;
+                    if (typeof key === "string") dot.object(this._db, undefined); // check if you have saved any keys in the "key-> key" format
+                    that.store.sync(this._db); // synchronize the memory and database
                     return true;
                 }
             }
