@@ -23,6 +23,7 @@ class Session {
             } else {
                 if (typeof value === "string") {
                     if (typeof key === "string") {
+                        dot.pick(key, this._db, true); //dot pick override fix
                         if (dot.str(key, value, this._db, _s.clean)) that.store.sync(this._db); // verify the key, add the value and synchronize the memory and database
                         return true;
                     } else {
@@ -31,29 +32,35 @@ class Session {
                         return true;
                     }
                 } else {
-                    this._db[key] = value;
-                    if (typeof key === "string") dot.object(this._db, undefined); // check if you have saved any keys in the "key-> key" format
-                    that.store.sync(this._db); // synchronize the memory and database
+                    if (typeof key === "string") {
+                        dot.pick(key, this._db, true); //dot pick override fix
+                        if (dot.str(key, value, this._db, undefined)) that.store.sync(this._db); //dot value object fix
+                    } else {
+                        this._db[key] = value;
+                        that.store.sync(this._db); // synchronize the memory and database
+                    }
                     return true;
                 }
             }
         } else return undefined;
     };
     delete = (key, value) = {
-    const that = this;
-        if((key) && (that._db[key])) {
-            delete that._db[key];
-            if((key === 'timestamp') || (key === 'hash') || (key === 'userdata')) { // mandatory keys to save session.
-                that.destroy(); //destroy session
-            } else that.store.sync(this._db); // synchronize the memory and database
-            return true;
+        const that = this;
+        if ((key) && (this._db[key])) {
+            if ((key === 'timestamp') || (key === 'hash') || (key === 'userdata')) { // mandatory keys to save session.
+                return that.destroy(); //destroy session
+            } else {
+                dot.pick(key, this._db, true);
+                that.store.sync(this._db); // synchronize the memory and database
+                return true;
+            }
         } else return false;
-};
+    };
     destroy = () => {
-    const that = this;
+        const that = this;
         const key = that._db['hash']; //get hash key
         this._db = Object.assign({}); //tmp session
-        if(key) that.store.remove(key); // sync memory and database
+        if (key) that.store.remove(key); // sync memory and database
         return true;
     };
     toJSON = () => {
