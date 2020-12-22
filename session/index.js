@@ -25,6 +25,7 @@ exports = module.exports = config => {
     remembering that I'm using restify as an example, adjusting requests for the server I use
     */
     const requrl = req.href().toString().toLowerCase(); // get url of request
+    if(requrl.startsWith("/assets")) return next(); //assets async fix;
     if (requrl === "/favicon.ico") {
       res.status(204);
       return res.end();
