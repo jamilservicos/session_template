@@ -50,11 +50,17 @@ class Session {
             if ((key === 'timestamp') || (key === 'hash') || (key === 'userdata')) { // mandatory keys to save session.
                 return that.destroy(); //destroy session
             } else {
-                dot.pick(key, this._db, true);
+                delete this._db[key];
                 that.store.sync(this._db); // synchronize the memory and database
                 return true;
             }
-        } else return false;
+        } else {
+            if(typeof key === "string") {
+                dot.pick(key, this._db, true); //fix dot shortkey
+                that.store.sync(this._db);
+                return true;
+            } else return false;
+        }
     };
     destroy = () => {
         const that = this;
